@@ -13,6 +13,7 @@ REM Compiling
   /std:c++17^
   /Fe:"box-delivery"^
   ../src/box-delivery.cpp^
-  /link User32.lib
+  /link User32.lib^
+  /SUBSYSTEM:CONSOLE
 
 popd
