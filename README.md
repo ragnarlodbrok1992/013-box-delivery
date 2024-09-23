@@ -1,2 +1,8 @@
-# 013-box-delivery
-Box Delivery game.
+# Box Delivery
+## Abstract
+
+Game about delivering boxes. Early alpha development.
+
+## Copyrights
+
+All of copyrights belong to me.
