@@ -9,6 +9,13 @@
 const wchar_t* CLASS_NAME = L"Box Delivery Window Class";
 const wchar_t* TITLEBAR = L"Box Delivery - alpha development stage.";
 
+// Graphics (DirectX) stuff
+typedef struct {
+  UINT m_width;
+  UINT m_height;
+  float m_aspectRatio;
+} ViewportDimensions;
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow) {
