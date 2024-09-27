@@ -2,8 +2,100 @@
 #define UNICODE
 #endif
 
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
+// System headers
 #include <windows.h>
+#include <wrl.h>
+#include <dxgi1_6.h>
+#include <d3d12.h>
+
+// Compiler headers from C++ std thanks Barney
 #include <iostream>
+#include <string>
+
+// Shaders in std::string format
+const std::string vertex_shader = R"()"; // Empty for now - using one big basic default shader TODO create my own
+const std::string pixel_shader = R"()";  // Empty for now - see above
+
+// Default shader from DirectX Graphics Sample
+const std::string default_directx_shader = R"(
+struct PSInput {
+  float4 position : SV_POSITION;
+  float4 color : COLOR;
+};
+
+PSInput VSMain(float4 position : POSITION, float4 color : COLOR) {
+  PSInput result;
+
+  result.position = position;
+  result.color = color;
+
+  return result;
+}
+
+float4 PSMain(PSInput input) : SV_TARGET {
+  return input.color;
+}
+)";
+
+// Helper functions from DXSample.cpp
+
+void GetHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapter, bool requestHighPerformanceAdapter) {
+  *ppAdapter = nullptr; // Setting as null at the start - common practice I think
+
+  Microsoft::WRL::ComPtr<IDXGIAdapter1> adapter;
+  Microsoft::WRL::ComPtr<IDXGIFactory6> factory6;
+
+  // TODO check what is going on here under the hood - some IID_PPV_ARGS whatever that means boi I'm stupid
+  if (SUCCEEDED(factory6->QueryInterface(IID_PPV_ARGS(&factory6)))) { // RECORD - four closing parenthesis!!!!
+    for (UINT adapterIndex = 0;
+         SUCCEEDED(factory6->EnumAdapterByGpuPreference(
+             adapterIndex,
+             requestHighPerformanceAdapter == true ? DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE : DXGI_GPU_PREFERENCE_UNSPECIFIED,
+             IID_PPV_ARGS(&adapter)));
+         ++adapterIndex) {
+      DXGI_ADAPTER_DESC1 desc;
+      adapter->GetDesc1(&desc);
+
+      if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) {
+        // Don't select the Basic Render Driver adapter which I guess is software adapter run on CPU - not for us
+        // we have power!!!!
+        continue;
+      }
+
+      // Device that supports Direct3D 12 found, not creating device yet.
+      if (SUCCEEDED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, _uuidof(ID3D12Device), nullptr))) {
+        break;
+      }
+
+    } // inner for
+  } // for
+
+  // Is this run again of no adapter was found? But the code is the same???
+  if (adapter.Get() == nullptr) {
+    for (UINT adapterIndex = 0; SUCCEEDED(pFactory->EnumAdapters1(adapterIndex, &adapter)); ++adapterIndex) {
+      DXGI_ADAPTER_DESC1 desc;
+      adapter->GetDesc1(&desc);
+
+      if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) {
+        // This is the same code as above? wtf
+        // This part uses pFactory->EnumAdapters1
+        // and the above part uses factory6->EnumAdapterByGpuPreference
+        // TODO optimze this when you have understanding of what is going on
+        continue;
+      }
+
+      if (SUCCEEDED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, _uuidof(ID3D12Device), nullptr))) {
+        break;
+      }
+    }
+  }
+
+  *ppAdapter = adapter.Detach();
+}
 
 // Stuff required for Windows classes
 const wchar_t* CLASS_NAME = L"Box Delivery Window Class";
@@ -51,6 +143,27 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow
   }
 
   ShowWindow(hwnd, nCmdShow);
+
+  // DEBUG CODE FOR SIMPLE DEVELOPMENT TESTS
+#if 1
+
+  IDXGIFactory1* testFactory = nullptr;
+  IDXGIAdapter1** testAdapter = nullptr;
+  bool request_high_performance_yes = true;
+  bool request_high_performance_no = false;
+
+  std::cout << "testFactory before: " << testFactory << std::endl;
+  std::cout << "testAdapter before: " << testAdapter << std::endl;
+
+  // FIXME it crushes here, gg ez
+  GetHardwareAdapter(testFactory, testAdapter, request_high_performance_yes);
+
+  std::cout << "testFactory after: " << testFactory << std::endl;
+  std::cout << "testAdapter after: " << testAdapter << std::endl;
+
+  // DEBUG code
+
+#endif
 
   // Message loop - very important in Windows TODO read more
   MSG msg = {};
