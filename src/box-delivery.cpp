@@ -17,6 +17,22 @@
 #include <string>
 #include <stdexcept>
 
+// After includes comes global setup variables for this file
+// Stuff required for Windows classes
+const wchar_t* CLASS_NAME = L"Box Delivery Window Class";
+const wchar_t* TITLEBAR = L"Box Delivery - alpha development stage.";
+
+// Graphics (DirectX) stuff
+typedef struct {
+  UINT m_width;
+  UINT m_height;
+  float m_aspectRatio;
+} ViewportDimensions;
+
+// Some DirectX variables
+static bool m_useWarpDevice = true;
+
+
 // Shaders in std::string format
 const std::string vertex_shader = R"()"; // Empty for now - using one big basic default shader TODO create my own
 const std::string pixel_shader = R"()";  // Empty for now - see above
@@ -161,17 +177,6 @@ void GetHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapter, bool
 
   *ppAdapter = adapter.Detach();
 }
-
-// Stuff required for Windows classes
-const wchar_t* CLASS_NAME = L"Box Delivery Window Class";
-const wchar_t* TITLEBAR = L"Box Delivery - alpha development stage.";
-
-// Graphics (DirectX) stuff
-typedef struct {
-  UINT m_width;
-  UINT m_height;
-  float m_aspectRatio;
-} ViewportDimensions;
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
