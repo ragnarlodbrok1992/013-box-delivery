@@ -15,6 +15,7 @@
 // Compiler headers from C++ std thanks Barney
 #include <iostream>
 #include <string>
+#include <stdexcept>
 
 // Shaders in std::string format
 const std::string vertex_shader = R"()"; // Empty for now - using one big basic default shader TODO create my own
@@ -40,6 +41,70 @@ float4 PSMain(PSInput input) : SV_TARGET {
   return input.color;
 }
 )";
+
+// Taken from HelloTriangle sample
+// 1. class HrException
+// 2. ThrowIfFailed
+// 3. HrToString() procedure
+// TODO: push this out of class and exceptions when you get some knowledge about DirectX3D
+inline std::string HrToString(HRESULT hr);
+
+class HrException : public std::runtime_error {
+  public:
+    HrException(HRESULT hr) : std::runtime_error(HrToString(hr)), m_hr(hr) {}
+    HRESULT Error() const { return m_hr; }
+  private:
+    const HRESULT m_hr;
+};
+
+inline void ThrowIfFailed(HRESULT hr) {
+  if (FAILED(hr)) {
+    throw HrException(hr);
+  }
+}
+
+inline std::string HrToString(HRESULT hr) {
+  char s_str[64] = {};
+  sprintf_s(s_str, "HRESULT of 0x%08X", static_cast<UINT>(hr));
+  return std::string(s_str);
+}
+
+void initialize() {
+  UINT dxgiFactoryFlags = 0;
+
+  // DEBUG enabling
+  // for now disabled
+#if 0
+
+#if defined(_DEBUG)
+  {
+    Microsoft::WRL::ComPtr<ID3D12Debug> debugController;
+
+    if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
+    {
+      debugController->EnableDebugLayer();
+
+      // Enable additional debug layers (how many are there????)
+      dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
+    }
+  }
+#endif
+
+#endif
+
+  // Not setting up debug layers anymore
+
+  Microsoft::WRL::ComPtr<IDXGIFactory4> factory;
+  ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory)));
+
+  if (m_useWarpDevice) {
+
+  }
+}
+
+void load_assets() {
+
+}
 
 // Helper functions from DXSample.cpp
 
@@ -142,10 +207,17 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow
     return 0; // If it fails
   }
 
+  // Stuff from OnInit in D3D12HelloTriangle - LoadPipeline and LoadAssets
+  // TODO for now only assets would be data for triangle?
+  // Load the rendering pipeline dependencies
+  void initialize();
+  void load_pipeline();
+
   ShowWindow(hwnd, nCmdShow);
 
   // DEBUG CODE FOR SIMPLE DEVELOPMENT TESTS
-#if 1
+  // TODO check this after writing initialize and load_pipeline functions
+#if 0
 
   IDXGIFactory1* testFactory = nullptr;
   IDXGIAdapter1** testAdapter = nullptr;
