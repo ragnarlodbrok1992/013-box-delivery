@@ -29,6 +29,9 @@ typedef struct {
   float m_aspectRatio;
 } ViewportDimensions;
 
+// Graphics (DirectX) forward declarations
+void GetHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapter, bool requestHighPerformanceAdapter);
+
 // Some DirectX variables
 static bool m_useWarpDevice = true;
 static Microsoft::WRL::ComPtr<ID3D12Device> m_device;
@@ -124,7 +127,25 @@ void initialize() {
       IID_PPV_ARGS(&m_device)
       ));
   } else {
+    Microsoft::WRL::ComPtr<IDXGIAdapter1> hardwareAdapter;
+    GetHardwareAdapter(factory.Get(), &hardwareAdapter, false); // TODO requestHighPerformanceAdapter is set to false
+
+    ThrowIfFailed(D3D12CreateDevice(
+      hardwareAdapter.Get(),
+      D3D_FEATURE_LEVEL_11_0,
+      IID_PPV_ARGS(&m_device)
+      ));
   }
+
+  // Describe and create the command queue.
+
+  // Describe and create the swap chain.
+  
+  // This sample does not support fullscreen transitions TODO learn what it is actually
+
+  // Create descriptor heaps.
+
+  // Create frame resources.
 }
 
 void load_assets() {
