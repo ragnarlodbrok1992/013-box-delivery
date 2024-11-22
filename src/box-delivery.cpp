@@ -19,3 +19,6 @@
 
 // TODO: rewrite whole application using debug session for hellotriangle sample
 
+// TODO task 1: create BaseApplication class (same as DXSample class)
+// TODO task 2: Check resources used in D3D12HelloTriangle class which inherits stuff from BaseApplication (DXSample class)
+// TODO rewrite this stuff to be more sane than it is in MS tutorial, because it really sucks as a tutorial
