@@ -4,3 +4,6 @@ build/
 # CTags
 tags
 
+# Remedy DBG session
+*.rdbg
+
