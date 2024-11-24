@@ -32,6 +32,10 @@ static UINT WINDOW_HEIGHT = 768;
 static std::wstring TITLE = L"Box Delivery"; // Windows strings require L before literal
 static UINT FRAME_INDEX = 0; // I think here we are counting frames
 static HWND M_HWND = nullptr;
+static WNDCLASSEX WINDOW_CLASS = {0};
+
+// Forward declarations
+LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
   // Print welcome message to console on Windows subsystem
@@ -53,8 +57,38 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     printf("Supplied %d command --> %ls\n", argc, argv[x]);
   }
   LocalFree(argv);
+  
+  // Intialize the window class
+  WINDOW_CLASS.cbSize = sizeof(WNDCLASSEX);
+  WINDOW_CLASS.style = CS_HREDRAW | CS_VREDRAW;
+  WINDOW_CLASS.lpfnWndProc = WindowProc;
+  WINDOW_CLASS.hInstance = hInstance;
+  WINDOW_CLASS.hCursor = LoadCursor(NULL, IDC_ARROW); // Changing cursor for the game here?
+  WINDOW_CLASS.lpszClassName = TITLE.c_str();
+  RegisterClassEx(&WINDOW_CLASS);
 
   // Print exit message to console on Windows subsystem
   printf("All went well, goodbye...\n");
   return 0;
+}
+
+
+LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+  switch (message) {
+    case WM_CREATE:
+      {
+
+      }
+      return 0;
+    case WM_PAINT:
+      {
+
+      }
+      return 0;
+    case WM_DESTROY:
+      PostQuitMessage(0);
+      return 0;
+    default:
+      return 0;
+  }
 }
