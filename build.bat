@@ -14,6 +14,6 @@ REM Compiling
   /Fe:"box-delivery"^
   ../src/box-delivery.cpp^
   /link User32.lib d3d12.lib DXGI.lib Shell32.lib^
-  /SUBSYSTEM:WINDOWS
+  /SUBSYSTEM:CONSOLE
 
 popd

@@ -40,6 +40,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
   // Print welcome message to console on Windows subsystem
   // This requires attaching to ParentProcessConsole
+#if 0 // Disabled for now - we cannot run in debuger if we do this - on subsystem console we don't have to, but binary will start console window, maybe we don't need that when shipping?
   if (AttachConsole(ATTACH_PARENT_PROCESS)) {
     // Redirect standard output to console
     freopen("CONOUT$", "w",  stdout);
@@ -48,13 +49,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     printf("Hello, Box Delivery!\n");
   } else {
     MessageBox(NULL, L"Failed to attach console", L"Error", MB_OK);
+    return 1;
   }
+#endif
+
+  // Print welcome message
+  printf("Hello, Box Delivery!\n");
 
   // Parsing command line options - not used for now
   int argc;
   LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
   for (int x = 1; x < argc; ++x) { // Ommiting name of binary
-    printf("Supplied %d command --> %ls\n", argc, argv[x]);
+    // printf("Supplied %d command --> %ls\n", argc, argv[x]); // We shouldn't printf to console?
   }
   LocalFree(argv);
   
@@ -66,6 +72,35 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
   WINDOW_CLASS.hCursor = LoadCursor(NULL, IDC_ARROW); // Changing cursor for the game here?
   WINDOW_CLASS.lpszClassName = TITLE.c_str();
   RegisterClassEx(&WINDOW_CLASS);
+
+  RECT windowRect = {0, 0, static_cast<LONG>(WINDOW_WIDTH), static_cast<LONG>(WINDOW_HEIGHT)};
+  AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
+
+  // Create window and store a handle to it
+  M_HWND = CreateWindow(
+      WINDOW_CLASS.lpszClassName,
+      TITLE.c_str(),
+      WS_OVERLAPPEDWINDOW,
+      CW_USEDEFAULT,
+      CW_USEDEFAULT,
+      windowRect.right - windowRect.left,
+      windowRect.bottom - windowRect.top,
+      nullptr, // No parent window
+      nullptr, // No menus
+      hInstance,
+      nullptr); // lparam
+
+  // Show window and run main event loop for windows messages
+  ShowWindow(M_HWND, nCmdShow);
+
+  MSG msg = {};
+  while (msg.message != WM_QUIT) {
+    // Process any messages in the queue
+    if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+      TranslateMessage(&msg);
+      DispatchMessage(&msg);
+    }
+  }
 
   // Print exit message to console on Windows subsystem
   printf("All went well, goodbye...\n");
@@ -91,4 +126,12 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
     default:
       return 0;
   }
+}
+
+int main(int argc, char* argv[]) {
+  // Voiding them, since we don't use them here for now (maybe ever)
+  (void) argc;
+  (void) argv;
+
+  return WinMain(GetModuleHandle(NULL), NULL, (LPSTR) GetCommandLineA(), SW_SHOWNORMAL);
 }
