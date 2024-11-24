@@ -21,10 +21,6 @@
 
 // TODO: rewrite whole application using debug session for hellotriangle sample
 
-// TODO task 1: create BaseApplication class (same as DXSample class)
-// TODO task 2: Check resources used in D3D12HelloTriangle class which inherits stuff from BaseApplication (DXSample class)
-// TODO rewrite this stuff to be more sane than it is in MS tutorial, because it really sucks as a tutorial
-
 // Declare all variables statically here for now
 // TODO: get some common resolutions and put them somewhere
 static UINT WINDOW_WIDTH = 1024;
@@ -33,6 +29,8 @@ static std::wstring TITLE = L"Box Delivery"; // Windows strings require L before
 static UINT FRAME_INDEX = 0; // I think here we are counting frames
 static HWND M_HWND = nullptr;
 static WNDCLASSEX WINDOW_CLASS = {0};
+
+// TODO: prepare pipeline objects from D3D1211on12.h as static objects for our executable
 
 // Forward declarations
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -92,6 +90,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
 
   // Show window and run main event loop for windows messages
   ShowWindow(M_HWND, nCmdShow);
+
+  // TODO: - next steps - go to pSample->OnInit and see what is going on there --> loadPipeline and loadAssets
 
   MSG msg = {};
   while (msg.message != WM_QUIT) {
