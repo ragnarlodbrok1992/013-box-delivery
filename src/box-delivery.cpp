@@ -12,12 +12,15 @@
 #include <shellapi.h>
 #include <wrl.h>
 #include <dxgi1_6.h>
-#include <d3d12.h>
 
 // Compiler headers from C++ std thanks Barney
 #include <iostream>
 #include <string>
 #include <stdexcept>
+
+// Local submodule includes - directx headers helpers
+#include "directx/d3d12.h"
+#include "directx/d3dx12.h"
 
 // TODO: rewrite whole application using debug session for hellotriangle sample
 
@@ -31,6 +34,10 @@ static HWND M_HWND = nullptr;
 static WNDCLASSEX WINDOW_CLASS = {0};
 
 // TODO: prepare pipeline objects from D3D1211on12.h as static objects for our executable
+
+// Pipeline objects
+static CD3DX12_VIEWPORT m_viewport;
+static CD3DX12_RECT m_scissorRect;
 
 // Forward declarations
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
