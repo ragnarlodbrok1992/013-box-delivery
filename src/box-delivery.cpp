@@ -35,9 +35,32 @@ static WNDCLASSEX WINDOW_CLASS = {0};
 
 // TODO: prepare pipeline objects from D3D1211on12.h as static objects for our executable
 
+// Constexpr for pipeline objects
+constexpr int FrameCount = 2;
+
 // Pipeline objects
 static CD3DX12_VIEWPORT m_viewport;
 static CD3DX12_RECT m_scissorRect;
+static Microsoft::WRL::ComPtr<IDXGISwapChain3> m_swapChain;
+static Microsoft::WRL::ComPtr<ID3D12Device> m_device;
+static Microsoft::WRL::ComPtr<ID3D12Resource> m_renderTargets[FrameCount];
+static Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_commandAllocator;
+static Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_commandQueue;
+static Microsoft::WRL::ComPtr<ID3D12RootSignature> m_rootSignature;
+static Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
+static Microsoft::WRL::ComPtr<ID3D12PipelineState> m_pipelineState;
+static Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_commandList;
+static UINT m_rtvDescriptorSize;
+
+// Application resources
+static Microsoft::WRL::ComPtr<ID3D12Resource> m_vertexBuffer;
+static D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
+
+// Synchronization objects
+static UINT m_frameIndex;
+static HANDLE m_fenceEvent;
+static Microsoft::WRL::ComPtr<ID3D12Fence> m_fence;
+static UINT64 m_fenceValue;
 
 // Forward declarations
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
