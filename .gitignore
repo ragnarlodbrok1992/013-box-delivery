@@ -7,3 +7,6 @@ tags
 # Remedy DBG session
 *.rdbg
 
+# Python prototype
+prototype/.venv/
+
